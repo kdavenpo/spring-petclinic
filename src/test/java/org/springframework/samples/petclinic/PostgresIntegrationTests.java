@@ -43,7 +43,6 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.samples.petclinic.vet.VetRepository;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 import org.testcontainers.DockerClientFactory;
@@ -56,9 +55,6 @@ public class PostgresIntegrationTests {
 
 	@LocalServerPort
 	int port;
-
-	@Autowired
-	private VetRepository vets;
 
 	@Autowired
 	private RestTemplateBuilder builder;
@@ -76,12 +72,6 @@ public class PostgresIntegrationTests {
 			) //
 			.listeners(new PropertiesLogger()) //
 			.run(args);
-	}
-
-	@Test
-	void testFindAll() throws Exception {
-		vets.findAll();
-		vets.findAll(); // served from cache
 	}
 
 	@Test

@@ -15,25 +15,19 @@
  */
 package org.springframework.samples.petclinic.vet;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.samples.petclinic.model.NamedEntity;
+import org.hibernate.annotations.Immutable;
 import org.springframework.samples.petclinic.model.Person;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import jakarta.xml.bind.annotation.XmlElement;
 
 /**
- * Simple JavaBean domain object representing a veterinarian.
+ * Read-only mapping of the shared {@code vets} table.
+ * <p>
+ * CS 8674 starting system: the vet package was moved out of clinic-core into the separate
+ * vets service, which owns this table. This class is the one piece kept, so that
+ * modification A can give each visit an attending vet. It has no specialties and is never
+ * written by clinic-core.
  *
  * @author Ken Krebs
  * @author Juergen Hoeller
@@ -41,34 +35,8 @@ import jakarta.xml.bind.annotation.XmlElement;
  * @author Arjen Poutsma
  */
 @Entity
+@Immutable
 @Table(name = "vets")
 public class Vet extends Person {
-
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "vet_specialties", joinColumns = @JoinColumn(name = "vet_id"),
-			inverseJoinColumns = @JoinColumn(name = "specialty_id"))
-	private Set<Specialty> specialties;
-
-	protected Set<Specialty> getSpecialtiesInternal() {
-		if (this.specialties == null) {
-			this.specialties = new HashSet<>();
-		}
-		return this.specialties;
-	}
-
-	@XmlElement
-	public List<Specialty> getSpecialties() {
-		return getSpecialtiesInternal().stream()
-			.sorted(Comparator.comparing(NamedEntity::getName))
-			.collect(Collectors.toList());
-	}
-
-	public int getNrOfSpecialties() {
-		return getSpecialtiesInternal().size();
-	}
-
-	public void addSpecialty(Specialty specialty) {
-		getSpecialtiesInternal().add(specialty);
-	}
 
 }
