@@ -1,0 +1,23 @@
+# The CS 8674 starting system: one shared MySQL schema used by both
+# clinic-core and vets. Services are added to this file in later steps.
+#
+# Start:   docker compose -f subject-system-compose.yml up -d
+# Stop:    docker compose -f subject-system-compose.yml down
+#          (down deletes the data; the next up rebuilds it from the scripts)
+
+services:
+  shared-db:
+    image: mysql:9.3@sha256:b9d8b7ec6e6aced08b1cfe50776f8e323c0a625adf4e10e69f90fc686ea10807   # upstream PetClinic's image, pinned to the exact build (MySQL 9.3.0)
+    container_name: petclinic-shared-db
+    ports:
+      - "3306:3306"                  # reachable from Windows at localhost:3306
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+      MYSQL_DATABASE: petclinic      # the one shared schema
+      MYSQL_USER: petclinic
+      MYSQL_PASSWORD: petclinic
+    volumes:
+      # Run once, on first start, in name order: tables first, then sample data.
+      # Both services read this schema; neither service creates it.
+      - ./src/main/resources/db/mysql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./src/main/resources/db/mysql/data.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
