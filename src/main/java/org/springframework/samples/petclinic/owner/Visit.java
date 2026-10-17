@@ -19,9 +19,12 @@ import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.samples.petclinic.model.BaseEntity;
+import org.springframework.samples.petclinic.vet.Vet;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
@@ -41,6 +44,10 @@ public class Visit extends BaseEntity {
 
 	@NotBlank
 	private String description;
+
+	@ManyToOne
+	@JoinColumn(name = "vet_id")
+	private Vet vet;
 
 	/**
 	 * Creates a new instance of Visit for the current date
@@ -63,6 +70,14 @@ public class Visit extends BaseEntity {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public Vet getVet() {
+		return this.vet;
+	}
+
+	public void setVet(Vet vet) {
+		this.vet = vet;
 	}
 
 }

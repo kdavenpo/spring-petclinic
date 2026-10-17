@@ -15,9 +15,11 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.samples.petclinic.vet.Vet;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -50,6 +52,11 @@ class VisitController {
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
+	}
+
+	@ModelAttribute("vets")
+	public List<Vet> populateVets() {
+		return this.owners.findVets();
 	}
 
 	/**
@@ -87,6 +94,9 @@ class VisitController {
 	@PostMapping("/owners/{ownerId}/pets/{petId}/visits/new")
 	public String processNewVisitForm(@ModelAttribute Owner owner, @PathVariable int petId, @Valid Visit visit,
 			BindingResult result, RedirectAttributes redirectAttributes) {
+		if (visit.getVet() == null || visit.getVet().getId() == null) {
+			result.rejectValue("vet", "required", "is required");
+		}
 		if (result.hasErrors()) {
 			return "pets/createOrUpdateVisitForm";
 		}
