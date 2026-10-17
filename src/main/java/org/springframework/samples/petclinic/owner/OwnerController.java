@@ -15,7 +15,9 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -117,6 +119,12 @@ class OwnerController {
 
 	private String addPaginationModel(int page, Model model, Page<Owner> paginated) {
 		List<Owner> listOwners = paginated.getContent();
+		// Modification B: one visit query per owner on the page (N + 1)
+		Map<Integer, Integer> visitCounts = new HashMap<>();
+		for (Owner listed : listOwners) {
+			visitCounts.put(listed.getId(), this.owners.findVisitsByOwnerId(listed.getId()).size());
+		}
+		model.addAttribute("visitCounts", visitCounts);
 		model.addAttribute("currentPage", page);
 		model.addAttribute("totalPages", paginated.getTotalPages());
 		model.addAttribute("totalItems", paginated.getTotalElements());

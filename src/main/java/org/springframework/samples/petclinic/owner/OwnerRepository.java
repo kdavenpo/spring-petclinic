@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.samples.petclinic.vet.Vet;
 
 /**
@@ -62,6 +63,15 @@ public interface OwnerRepository extends JpaRepository<Owner, Integer> {
 	 * found)
 	 */
 	Page<Owner> findByLastNameStartingWith(String lastName, Pageable pageable);
+
+	/**
+	 * Retrieve the {@link Visit}s of all of one owner's pets. Modification B: the owner
+	 * list calls this once per owner (N + 1).
+	 * @param ownerId the owner whose visits to fetch
+	 * @return the owner's visits, across all their pets
+	 */
+	@Query("SELECT visit FROM Owner owner JOIN owner.pets pet JOIN pet.visits visit WHERE owner.id = :ownerId")
+	List<Visit> findVisitsByOwnerId(@Param("ownerId") Integer ownerId);
 
 	/**
 	 * Retrieve an {@link Owner} from the data store by id.

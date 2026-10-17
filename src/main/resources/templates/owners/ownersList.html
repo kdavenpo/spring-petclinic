@@ -14,6 +14,7 @@
         <th th:text="#{city}">City</th>
         <th th:text="#{telephone}" style="width: 120px">Telephone</th>
         <th th:text="#{pets}">Pets</th>
+        <th th:text="#{visits}">Visits</th>
       </tr>
     </thead>
     <tbody>
@@ -25,6 +26,7 @@
         <td th:text="${owner.city}" />
         <td th:text="${owner.telephone}" />
         <td><span th:text="${#strings.listJoin(owner.pets, ', ')}" /></td>
+        <td th:text="${visitCounts.get(owner.id)}"></td>
       </tr>
     </tbody>
   </table>
